@@ -1,2 +1,4 @@
 gostatsd/gostatsd
 example/example
+
+*.exe

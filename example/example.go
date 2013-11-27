@@ -1,14 +1,25 @@
 package main
 
 import (
-	"github.com/kisielk/gostatsd/statsd"
+	"github.com/RangelReale/gostatsd/statsd"
 	"log"
+	"time"
 )
 
 func main() {
-	f := func(m statsd.Metric) {
+	log.Printf("Starting...")
+
+	fagg := func(m statsd.MetricMap) {
 		log.Printf("%s", m)
 	}
-	r := statsd.MetricReceiver{":8125", HanlderFunc(f)}
+
+	aggregator := statsd.NewMetricAggregator(statsd.MetricSenderFunc(fagg), 10*time.Second)
+	go aggregator.Aggregate()
+
+	f := func(m statsd.Metric) {
+		log.Printf("%s", m)
+		aggregator.MetricChan <- m
+	}
+	r := statsd.MetricReceiver{":8125", statsd.HandlerFunc(f)}
 	r.ListenAndReceive()
 }
