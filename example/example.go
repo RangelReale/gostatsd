@@ -9,8 +9,9 @@ import (
 func main() {
 	log.Printf("Starting...")
 
-	fagg := func(m statsd.MetricMap) {
+	fagg := func(m statsd.MetricMap) error {
 		log.Printf("%s", m)
+		return nil
 	}
 
 	aggregator := statsd.NewMetricAggregator(statsd.MetricSenderFunc(fagg), 10*time.Second)
